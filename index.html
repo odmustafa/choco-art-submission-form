@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artist Submission - Gallery Exhibition</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .form-container {
+            padding: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 0.95em;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #fafbfc;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="tel"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .file-upload {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-upload input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-upload-label {
+            display: block;
+            padding: 20px;
+            border: 2px dashed #667eea;
+            border-radius: 8px;
+            text-align: center;
+            background: #f8f9ff;
+            color: #667eea;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-upload-label:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .file-preview {
+            margin-top: 15px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+        }
+
+        .preview-item {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #f5f5f5;
+        }
+
+        .preview-item img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+        }
+
+        .preview-item .remove-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .required {
+            color: #e74c3c;
+        }
+
+        .success-message {
+            background: #2ecc71;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .error-message {
+            background: #e74c3c;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .container {
+                margin: 10px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .form-container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Artist Submission</h1>
+            <p>Submit your artwork for our upcoming gallery exhibition</p>
+        </div>
+        
+        <div class="form-container">
+            <div class="success-message" id="successMessage">
+                Your submission has been sent successfully! We'll review your application and get back to you soon.
+            </div>
+            
+            <div class="error-message" id="errorMessage">
+                There was an error submitting your application. Please try again.
+            </div>
+            
+            <form id="submissionForm" enctype="multipart/form-data">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="firstName">First Name <span class="required">*</span></label>
+                        <input type="text" id="firstName" name="firstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Last Name <span class="required">*</span></label>
+                        <input type="text" id="lastName" name="lastName" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address <span class="required">*</span></label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" name="phone">
+                    </div>
+                    <div class="form-group">
+                        <label for="website">Website/Portfolio</label>
+                        <input type="text" id="website" name="website" placeholder="https://">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="address">Address</label>
+                    <textarea id="address" name="address" rows="3"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="artworkTitle">Artwork Title <span class="required">*</span></label>
+                    <input type="text" id="artworkTitle" name="artworkTitle" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="medium">Medium <span class="required">*</span></label>
+                        <select id="medium" name="medium" required>
+                            <option value="">Select Medium</option>
+                            <option value="oil">Oil Painting</option>
+                            <option value="acrylic">Acrylic Painting</option>
+                            <option value="watercolor">Watercolor</option>
+                            <option value="sculpture">Sculpture</option>
+                            <option value="photography">Photography</option>
+                            <option value="digital">Digital Art</option>
+                            <option value="mixed">Mixed Media</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="dimensions">Dimensions (H x W x D)</label>
+                        <input type="text" id="dimensions" name="dimensions" placeholder="e.g., 24 x 36 x 2 inches">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="yearCreated">Year Created</label>
+                        <input type="text" id="yearCreated" name="yearCreated" placeholder="YYYY">
+                    </div>
+                    <div class="form-group">
+                        <label for="price">Price (USD)</label>
+                        <input type="text" id="price" name="price" placeholder="Enter amount or 'NFS' if not for sale">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Artwork Description <span class="required">*</span></label>
+                    <textarea id="description" name="description" rows="4" required placeholder="Describe your artwork, inspiration, techniques used, etc."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="artistStatement">Artist Statement</label>
+                    <textarea id="artistStatement" name="artistStatement" rows="4" placeholder="Tell us about your artistic practice and vision"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="artworkImages">Artwork Images <span class="required">*</span></label>
+                    <div class="file-upload">
+                        <input type="file" id="artworkImages" name="artworkImages[]" multiple accept="image/*" required>
+                        <label for="artworkImages" class="file-upload-label">
+                            📁 Click to upload images or drag and drop<br>
+                            <small>Maximum 10 images, up to 5MB each</small>
+                        </label>
+                    </div>
+                    <div class="file-preview" id="imagePreview"></div>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    Submit Application
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('submissionForm');
+        const fileInput = document.getElementById('artworkImages');
+        const imagePreview = document.getElementById('imagePreview');
+        const submitBtn = document.getElementById('submitBtn');
+        const successMessage = document.getElementById('successMessage');
+        const errorMessage = document.getElementById('errorMessage');
+
+        let selectedFiles = [];
+
+        // Handle file selection
+        fileInput.addEventListener('change', function(e) {
+            const files = Array.from(e.target.files);
+            
+            // Validate file count
+            if (selectedFiles.length + files.length > 10) {
+                alert('Maximum 10 images allowed');
+                return;
+            }
+
+            files.forEach(file => {
+                // Validate file size (5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert(`File ${file.name} is too large. Maximum size is 5MB.`);
+                    return;
+                }
+
+                // Validate file type
+                if (!file.type.startsWith('image/')) {
+                    alert(`File ${file.name} is not a valid image file.`);
+                    return;
+                }
+
+                selectedFiles.push(file);
+                displayImagePreview(file);
+            });
+
+            // Clear the input
+            fileInput.value = '';
+        });
+
+        function displayImagePreview(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const previewItem = document.createElement('div');
+                previewItem.className = 'preview-item';
+                previewItem.innerHTML = `
+                    <img src="${e.target.result}" alt="Preview">
+                    <button type="button" class="remove-btn" onclick="removeImage(${selectedFiles.length - 1})">×</button>
+                `;
+                imagePreview.appendChild(previewItem);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function removeImage(index) {
+            selectedFiles.splice(index, 1);
+            imagePreview.innerHTML = '';
+            selectedFiles.forEach(file => displayImagePreview(file));
+        }
+
+        // Handle form submission
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (selectedFiles.length === 0) {
+                alert('Please upload at least one image of your artwork.');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+
+            const formData = new FormData();
+            
+            // Add form fields
+            const formElements = form.elements;
+            for (let element of formElements) {
+                if (element.type !== 'file' && element.type !== 'submit') {
+                    formData.append(element.name, element.value);
+                }
+            }
+
+            // Add selected files
+            selectedFiles.forEach((file, index) => {
+                formData.append(`artworkImages[${index}]`, file);
+            });
+
+            try {
+                const response = await fetch('process_submission.php', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    successMessage.style.display = 'block';
+                    errorMessage.style.display = 'none';
+                    form.reset();
+                    selectedFiles = [];
+                    imagePreview.innerHTML = '';
+                    window.scrollTo(0, 0);
+                } else {
+                    throw new Error(result.message || 'Submission failed');
+                }
+            } catch (error) {
+                errorMessage.style.display = 'block';
+                errorMessage.textContent = error.message || 'There was an error submitting your application. Please try again.';
+                successMessage.style.display = 'none';
+                console.error('Submission error:', error);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Application';
+            }
+        });
+
+        // Drag and drop functionality
+        const fileUploadLabel = document.querySelector('.file-upload-label');
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            fileUploadLabel.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            fileUploadLabel.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            fileUploadLabel.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight() {
+            fileUploadLabel.style.background = '#667eea';
+            fileUploadLabel.style.color = 'white';
+        }
+
+        function unhighlight() {
+            fileUploadLabel.style.background = '#f8f9ff';
+            fileUploadLabel.style.color = '#667eea';
+        }
+
+        fileUploadLabel.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            
+            // Trigger the file input change event
+            const event = new Event('change');
+            fileInput.files = files;
+            fileInput.dispatchEvent(event);
+        }
+    </script>
+</body>
+</html>
